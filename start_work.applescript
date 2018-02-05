@@ -8,9 +8,10 @@
 on run argv
 	set dirs to {"~/projects/repo1/", "~/projects/repo1/", "/playground/"}
 	
-	set numColumns to (count dirs)
+	set numColumns to (round ((count dirs) ^ 0.5) rounding up)
 	
 	set allSessions to {}
+	set columnTops to {}
 	
 	set isNewWindow to false
 	
@@ -28,21 +29,38 @@ on run argv
 			set isNewWindow to true
 		end try
 		
+		-- create column tops
 		tell current window
 			if not isNewWindow then
 				-- only create new tab when the window was already there before we run script
 				create tab with default profile
 			end if
 			copy current session to end of |allSessions|
+			copy current session to end of |columnTops|
 			tell current session
 				repeat numColumns - 1 times
 					set newSession to (split vertically with default profile)
 					copy newSession to end of |allSessions|
+					copy newSession to end of |columnTops|
 					tell newSession to select
 				end repeat
 			end tell
 		end tell
-		
+
+		-- split each column
+		set columnsDone to 0
+		repeat with columnTop in columnTops
+			tell columnTop
+				-- calculate how many vertical panes we need here
+				set numVertical to (round(((count dirs)-(count allSessions))/(numColumns-columnsDone)) rounding up) + 1
+				repeat numVertical - 1 times
+					copy (split horizontally with default profile) to end of |allSessions|
+				end repeat
+				set columnsDone to columnsDone + 1
+			end tell
+		end repeat
+
+		-- run ssh commands on all sessions
 		repeat with loopIndex from 1 to number of items in allSessions
 			tell item loopIndex of allSessions
 				write text "cd " & (item loopIndex of dirs)
