@@ -10,6 +10,6 @@ run
 osascript start_work.applescript
 ```
 
-or you can compile it into a `.app` using AppleScript Editor.
+or you can compile it into a `.app` using AppleScript Editor. or `osacompile start_work.applescript`
 
-referenced: https://github.com/bmfurtado/iterm2-cssh  (frankly, this iterm2-cssh is a better framework to use if you want to customise into other usage.)
+This is a tweaked version of: https://github.com/bmfurtado/iterm2-cssh  Mainly added the logic to use existing window/session when iterm is already running.
